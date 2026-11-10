@@ -1,16 +1,39 @@
 
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 
+import ActionButton from '../components/ActionButton';
 import AnnouncementPanel from '../components/AnnouncementPanel';
+import SectionHeading from '../components/SectionHeading';
+
+const bannerUri =
+  'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80';
 
 export default function HomeScreen() {
+  const { width } = useWindowDimensions();
+  const compact = width < 380;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Campus Connect</Text>
-      <Text style={styles.subtitle}>One campus. Connected students.</Text>
-      <Text style={styles.welcome}>Welcome to the Week 3 project foundation.</Text>
+      <View style={styles.content}>
+        <SectionHeading
+          title="Campus Connect"
+          subtitle="Your campus updates, events, and reminders in one place."
+        />
 
-      <AnnouncementPanel />
+        <Image
+          source={{ uri: bannerUri }}
+          style={[styles.banner, compact && styles.compactBanner]}
+          accessibilityLabel="Campus Connect banner"
+        />
+
+        <Text style={[styles.intro, compact && styles.compactIntro]}>
+          Stay informed about academic updates, student events, and essential campus notices.
+        </Text>
+
+        <ActionButton label="View all announcements" onPress={() => undefined} />
+
+        <AnnouncementPanel />
+      </View>
     </View>
   );
 }
@@ -18,24 +41,34 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
     backgroundColor: '#F4F7FB',
+    alignItems: 'center',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    marginBottom: 12,
-    color: '#111827',
+  content: {
+    width: '100%',
+    maxWidth: 640,
+    paddingHorizontal: 18,
+    paddingTop: 24,
+    paddingBottom: 32,
   },
-  subtitle: {
+  banner: {
+    width: '100%',
+    height: 160,
+    borderRadius: 16,
+    marginTop: 16,
+    marginBottom: 14,
+    backgroundColor: '#D1D5DB',
+  },
+  compactBanner: {
+    height: 120,
+  },
+  intro: {
     fontSize: 16,
+    lineHeight: 24,
     color: '#374151',
-    marginBottom: 8,
+    marginBottom: 18,
   },
-  welcome: {
-    marginBottom: 8,
-    color: '#4B5563',
+  compactIntro: {
+    fontSize: 15,
   },
 });

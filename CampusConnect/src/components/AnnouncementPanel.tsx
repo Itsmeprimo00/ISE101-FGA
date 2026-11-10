@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import type { Announcement } from '../../types/announcement';
 import AnnouncementCard from './AnnouncementCard';
@@ -23,10 +23,21 @@ const initialAnnouncements: Announcement[] = [
     category: 'Notice',
     read: false,
   },
+  {
+    id: 'a4',
+    title: 'Student wellness workshop registration now open for the fall semester',
+    category: 'Notice',
+    read: false,
+  },
 ];
 
 export default function AnnouncementPanel() {
   const [announcements, setAnnouncements] = useState<Announcement[]>(initialAnnouncements);
+
+  const unreadCount = useMemo(
+    () => announcements.filter(item => !item.read).length,
+    [announcements],
+  );
 
   const handleToggleRead = (id: string) => {
     setAnnouncements(currentAnnouncements =>
@@ -36,22 +47,29 @@ export default function AnnouncementPanel() {
     );
   };
 
-  const unreadCount = announcements.filter(item => !item.read).length;
-
   return (
     <View style={styles.panel}>
-      <Text style={styles.heading}>Campus Announcements</Text>
-      <Text style={styles.count}>Unread announcements: {unreadCount}</Text>
-
-      {announcements.map(item => (
-        <AnnouncementCard
-          key={item.id}
-          title={item.title}
-          category={item.category}
-          read={item.read}
-          onMarkRead={() => handleToggleRead(item.id)}
-        />
-      ))}
+      <FlatList
+        data={announcements}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <AnnouncementCard
+            title={item.title}
+            category={item.category}
+            read={item.read}
+            onMarkRead={() => handleToggleRead(item.id)}
+          />
+        )}
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <Text style={styles.heading}>Campus Announcements</Text>
+            <Text style={styles.count}>Unread announcements: {unreadCount}</Text>
+          </View>
+        }
+        ListHeaderComponentStyle={styles.headerStyle}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }
@@ -59,18 +77,27 @@ export default function AnnouncementPanel() {
 const styles = StyleSheet.create({
   panel: {
     width: '100%',
+    maxWidth: 640,
     marginTop: 24,
+  },
+  header: {
+    marginBottom: 12,
+  },
+  headerStyle: {
+    width: '100%',
+  },
+  listContent: {
+    paddingBottom: 16,
   },
   heading: {
     fontSize: 22,
     fontWeight: '700',
-    marginBottom: 8,
     color: '#111827',
+    marginBottom: 6,
   },
   count: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    marginBottom: 16,
     color: '#374151',
   },
 });
